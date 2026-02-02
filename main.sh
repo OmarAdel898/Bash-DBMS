@@ -8,6 +8,7 @@ DBMS_DIR="$HOME/DBMS"
 
 mkdir -p "$DBMS_DIR"
 
+source ./db_functions.sh
 
 while true
 do
@@ -16,7 +17,9 @@ do
     echo "=============================="
     echo "1. Create Database"
     echo "2. List Databases"
-    echo "3. Exit"
+    echo "3. Connect To Database"
+    echo "4. Drop Database"
+    echo "5. Exit"
     echo "=============================="
 
     read -p "Choose option: " choice
@@ -45,6 +48,12 @@ do
             ls "$DBMS_DIR"
             ;;
         3)
+            connect_database 
+            ;;
+        4)
+            drop_database
+            ;;
+        5)
             echo "👋 Exiting DBMS..."
             exit
             ;;
