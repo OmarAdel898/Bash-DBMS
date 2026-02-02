@@ -3,12 +3,12 @@
 # ==============================
 # DBMS Root Directory
 # ==============================
-DBMS_DIR="$HOME/DBMS"
-
+SCRIPT_DIR=$(dirname "$0")
+DBMS_DIR="$SCRIPT_DIR/databases"
 
 mkdir -p "$DBMS_DIR"
 
-source ./db_functions.sh
+source "$SCRIPT_DIR/db_functions.sh"
 
 while true
 do
@@ -27,21 +27,7 @@ do
     case $choice in
         1)
             
-            read -p "Enter database name: " db_name
-
-            if [[ -z $db_name ]]
-            then
-                echo "❌ Database name cannot be empty"
-                continue
-            fi
-
-            if [[ -d "$DBMS_DIR/$db_name" ]]
-            then
-                echo "❌ Database already exists"
-            else
-                mkdir "$DBMS_DIR/$db_name"
-                echo "✅ Database '$db_name' created successfully"
-            fi
+            create_table
             ;;
         2)
             echo "📂 Available Databases:"

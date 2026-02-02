@@ -3,6 +3,24 @@
 # ==============================
 # Database Functions
 # ==============================
+create_table(){
+      read -p "Enter database name: " db_name
+
+      if [[ -z $db_name ]]
+      then
+          echo "❌ Database name cannot be empty"
+          continue
+       fi
+
+       if [[ -d "$DBMS_DIR/$db_name" ]]
+       then
+           echo "❌ Database already exists"
+       else
+           mkdir "$DBMS_DIR/$db_name"
+           echo "✅ Database '$db_name' created successfully"
+       fi
+}
+
 
 connect_database() {
     read -p "Enter database name to connect: " db_name
