@@ -32,7 +32,80 @@ table_menu() {
     done
 }
 
-create_table() {}
+create_table() {
+    read -p "Enter table name: " table_name
+
+    if [[ -z "$table_name" ]]
+    then
+        echo "Table name cannot be empty"
+        return
+    fi
+
+    if [[ -f "$CURRENT_DB/$table_name.table" ]]
+    then
+        echo "Table already exists"
+        return
+    fi
+
+    read -p "Enter number of columns: " cols_num
+
+    if ! [[ "$cols_num" =~ ^[0-9]+$ ]] || [[ "$cols_num" -le 0 ]]
+    then
+        echo "Invalid number of columns"
+        return
+    fi
+
+    meta_file="$CURRENT_DB/$table_name.meta"
+    data_file="$CURRENT_DB/$table_name.table"
+
+    touch "$meta_file" "$data_file"
+
+    pk_set=false
+
+    for (( i=1; i<=cols_num; i++ ))
+    do
+        echo "------------------------------"
+        read -p "Column $i name: " col_name
+
+        if [[ -z "$col_name" ]]
+        then
+            echo "Column name cannot be empty"
+            rm "$meta_file" "$data_file"
+            return
+        fi
+
+        read -p "Column $i datatype (int/string): " col_type
+        if [[ "$col_type" != "int" && "$col_type" != "string" ]]
+        then
+            echo "Invalid datatype"
+            rm "$meta_file" "$data_file"
+            return
+        fi
+
+        if ! $pk_set
+        then
+            read -p "Is this column Primary Key? (y/n): " is_pk
+
+            if [[ "$is_pk" == "y" ]]
+            then
+                echo "$col_name:$col_type:PK" >> "$meta_file"
+                pk_set=true
+                continue
+            fi
+        fi
+
+        echo "$col_name:$col_type" >> "$meta_file"
+    done
+
+    if ! $pk_set
+    then
+        echo "Table must have a primary key"
+        rm "$meta_file" "$data_file"
+        return
+    fi
+
+    echo "Table '$table_name' created successfully"
+}
 
 list_tables() {}
 
