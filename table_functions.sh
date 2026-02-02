@@ -110,7 +110,9 @@ create_table() {
 
 
 
-list_tables() {}
+list_tables() {
+   echo "list table"
+}
 
 
 
