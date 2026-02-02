@@ -9,6 +9,7 @@ DBMS_DIR="$SCRIPT_DIR/databases"
 mkdir -p "$DBMS_DIR"
 
 source "$SCRIPT_DIR/db_functions.sh"
+source "$SCRIPT_DIR/table_functions.sh"
 
 while true
 do

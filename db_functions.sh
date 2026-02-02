@@ -3,6 +3,7 @@
 # ==============================
 # Database Functions
 # ==============================
+
 create_table(){
       read -p "Enter database name: " db_name
 
@@ -34,6 +35,8 @@ connect_database() {
     if [[ -d "$DBMS_DIR/$db_name" ]]
     then
         echo "Connected to database '$db_name'"
+	CURRENT_DB="$DBMS_DIR/$db_name"
+        table_menu
     else
         echo "Database does not exist"
     fi
