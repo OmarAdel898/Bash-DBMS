@@ -107,9 +107,47 @@ create_table() {
     echo "Table '$table_name' created successfully"
 }
 
-list_tables() {}
 
-drop_table() {}
+
+
+list_tables() {
+   echo "list table"
+}
+
+
+
+
+
+drop_table() {
+    read -p "Enter table name to drop: " table_name
+
+    if [[ -z "$table_name" ]]
+    then
+        echo "Table name cannot be empty"
+        return
+    fi
+
+    table_file="$CURRENT_DB/$table_name.table"
+    meta_file="$CURRENT_DB/$table_name.meta"
+
+    if [[ ! -f "$table_file" || ! -f "$meta_file" ]]
+    then
+        echo "Table does not exist"
+        return
+    fi
+
+    read -p "Are you sure you want to delete table '$table_name'? (y/n): " confirm
+
+    if [[ "$confirm" != "y" ]]
+    then
+        echo "Drop table cancelled"
+        return
+    fi
+
+    rm "$table_file" "$meta_file"
+    echo "Table '$table_name' dropped successfully"
+
+}
 
 insert_into_table() {}
 
