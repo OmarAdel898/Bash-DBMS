@@ -111,8 +111,29 @@ create_table() {
 
 
 list_tables() {
-   echo "list table"
+
+    if [[ -z "$CURRENT_DB" ]]; then
+        echo "No  database selected."
+        return
+    fi
+
+    tables=$(ls "$CURRENT_DB"/*.table 2>/dev/null)
+
+    if [[ -z "$tables" ]]; then
+        echo "No tables found in database '$CURRENT_DB'."
+        return
+    fi
+
+    echo "=============================="
+    echo "Tables in database:"
+    echo "=============================="
+
+    for table in $tables
+    do
+        basename "$table" .table
+    done
 }
+
 
 
 
@@ -149,7 +170,61 @@ drop_table() {
 
 }
 
-insert_into_table() {}
+insert_into_table() {
+    read -p "Enter table name: " table_name
+
+    if [[ -z "$table_name" ]]; then
+        echo "Table name cannot be empty"
+        return
+    fi
+
+    table_file="$CURRENT_DB/$table_name.table"
+    meta_file="$CURRENT_DB/$table_name.meta"
+
+    if [[ ! -f "$table_file" || ! -f "$meta_file" ]]; then
+        echo "Table does not exist"
+        return
+    fi
+
+    row=""
+    pk_value=""
+
+    while IFS=: read -r col_name col_type col_key
+    do
+        while true
+        do
+            read -p "Enter $col_name ($col_type): " value
+
+            if [[ "$col_type" == "int" && ! "$value" =~ ^[0-9]+$ ]]; then
+                echo "Invalid integer value"
+                continue
+            fi
+
+            if [[ "$col_type" == "string" && "$value" == *"|"* ]]; then
+                echo "Character | is not allowed"
+                continue
+            fi
+
+            if [[ "$col_key" == "PK" ]]; then
+                if cut -d'|' -f1 "$table_file" | grep -qx "$value"; then
+                    echo "Primary key must be unique"
+                    continue
+                fi
+                pk_value="$value"
+            fi
+
+            break
+        done
+
+        row+="$value|"
+    done < "$meta_file"
+
+    row="${row%|}"
+
+    echo "$row" >> "$table_file"
+    echo "Row inserted successfully"
+}
+
 
 select_from_table() {}
 
