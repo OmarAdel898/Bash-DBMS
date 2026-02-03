@@ -16,8 +16,7 @@ table_menu() {
         echo "8. Back To Main Menu"
         echo "=============================="
 
-        read -p "Choose option: " choice
-
+        read -p "Choose option: " choice < /dev/tty
         case $choice in
             1) create_table ;;
             2) list_tables ;;
@@ -33,7 +32,7 @@ table_menu() {
 }
 
 create_table() {
-    read -p "Enter table name: " table_name
+    read -p "Enter table name: " table_name < /dev/tty
 
     if [[ -z "$table_name" ]]
     then
@@ -47,7 +46,7 @@ create_table() {
         return
     fi
 
-    read -p "Enter number of columns: " cols_num
+    read -p "Enter number of columns: " cols_num < /dev/tty
 
     if ! [[ "$cols_num" =~ ^[0-9]+$ ]] || [[ "$cols_num" -le 0 ]]
     then
@@ -65,7 +64,7 @@ create_table() {
     for (( i=1; i<=cols_num; i++ ))
     do
         echo "------------------------------"
-        read -p "Column $i name: " col_name
+        read -p "Column $i name: " col_name < /dev/tty
 
         if [[ -z "$col_name" ]]
         then
@@ -74,7 +73,7 @@ create_table() {
             return
         fi
 
-        read -p "Column $i datatype (int/string): " col_type
+        read -p "Column $i datatype (int/string): " col_type < /dev/tty
         if [[ "$col_type" != "int" && "$col_type" != "string" ]]
         then
             echo "Invalid datatype"
@@ -84,7 +83,7 @@ create_table() {
 
         if ! $pk_set
         then
-            read -p "Is this column Primary Key? (y/n): " is_pk
+            read -p "Is this column Primary Key? (y/n): " is_pk < /dev/tty
 
             if [[ "$is_pk" == "y" ]]
             then
@@ -140,7 +139,7 @@ list_tables() {
 
 
 drop_table() {
-    read -p "Enter table name to drop: " table_name
+    read -p "Enter table name to drop: " table_name < /dev/tty
 
     if [[ -z "$table_name" ]]
     then
@@ -157,7 +156,7 @@ drop_table() {
         return
     fi
 
-    read -p "Are you sure you want to delete table '$table_name'? (y/n): " confirm
+    read -p "Are you sure you want to delete table '$table_name'? (y/n): " confirm < /dev/tty
 
     if [[ "$confirm" != "y" ]]
     then
@@ -171,7 +170,7 @@ drop_table() {
 }
 
 insert_into_table() {
-    read -p "Enter table name: " table_name
+    read -p "Enter table name: " table_name < /dev/tty
 
     if [[ -z "$table_name" ]]; then
         echo "Table name cannot be empty"
@@ -188,7 +187,7 @@ insert_into_table() {
 
     row=""
 
-    while IFS=: read -r col_name col_type col_key
+    while IFS=: read -r col_name col_type col_key 
     do
         while true
         do
@@ -223,9 +222,16 @@ insert_into_table() {
 }
 
 
-select_from_table() {}
+select_from_table() {
+     echo "⚠️ Select from table not implemented yet"
+}
 
-delete_from_table() {}
+delete_from_table() {
+     echo "⚠️ Delete from table not implemented yet"
+}
 
-update_table() {}
+update_table() {
+    echo "⚠️ Update table not implemented yet"
+}
+
 

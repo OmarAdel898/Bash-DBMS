@@ -5,12 +5,13 @@
 # ==============================
 
 create_database(){
-      read -p "Enter database name: " db_name
+      read -p "Enter database name: " db_name < /dev/tty
 
       if [[ -z $db_name ]]
       then
           echo "❌ Database name cannot be empty"
-          continue
+          return
+
        fi
 
        if [[ -d "$DBMS_DIR/$db_name" ]]
@@ -24,7 +25,7 @@ create_database(){
 
 
 connect_database() {
-    read -p "Enter database name to connect: " db_name
+    read -p "Enter database name to connect: " db_name < /dev/tty
 
     if [[ -z "$db_name" ]]
     then
@@ -43,7 +44,7 @@ connect_database() {
 }
 
 drop_database() {
-    read -p "Enter database name to drop: " db_name
+    read -p "Enter database name to drop: " db_name < /dev/tty
 
     if [[ -z "$db_name" ]]
     then
@@ -53,7 +54,7 @@ drop_database() {
 
     if [[ -d "$DBMS_DIR/$db_name" ]]
     then
-        read -p "Are you sure you want to delete '$db_name'? (y/n): " confirm
+        read -p "Are you sure you want to delete '$db_name'? (y/n): " confirm < /dev/tty
         if [[ "$confirm" == "y" ]]
         then
             rm -r "$DBMS_DIR/$db_name"
