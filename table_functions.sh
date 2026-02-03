@@ -111,8 +111,29 @@ create_table() {
 
 
 list_tables() {
-   echo "list table"
+
+    if [[ -z "$CURRENT_DB" ]]; then
+        echo "No database "
+        return
+    fi
+
+    tables=$(ls "$CURRENT_DB"/*.table 2>/dev/null)
+
+    if [[ -z "$tables" ]]; then
+        echo "No Database found"
+        return
+    fi
+
+    echo "=============================="
+    echo "Tables in database:"
+    echo "=============================="
+
+    for table in $tables
+    do
+        basename "$table" .table
+    done
 }
+
 
 
 
