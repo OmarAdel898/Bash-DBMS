@@ -28,7 +28,7 @@ do
     case $choice in
         1)
             
-            create_table
+            create_database
             ;;
         2)
             echo "📂 Available Databases:"

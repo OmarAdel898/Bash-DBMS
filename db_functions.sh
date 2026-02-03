@@ -4,7 +4,7 @@
 # Database Functions
 # ==============================
 
-create_table(){
+create_database(){
       read -p "Enter database name: " db_name
 
       if [[ -z $db_name ]]
