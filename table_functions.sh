@@ -187,13 +187,12 @@ insert_into_table() {
     fi
 
     row=""
-    pk_value=""
 
     while IFS=: read -r col_name col_type col_key
     do
         while true
         do
-            read -p "Enter $col_name ($col_type): " value
+            read -p "Enter $col_name ($col_type): " value < /dev/tty
 
             if [[ "$col_type" == "int" && ! "$value" =~ ^[0-9]+$ ]]; then
                 echo "Invalid integer value"
@@ -210,7 +209,6 @@ insert_into_table() {
                     echo "Primary key must be unique"
                     continue
                 fi
-                pk_value="$value"
             fi
 
             break
@@ -220,7 +218,6 @@ insert_into_table() {
     done < "$meta_file"
 
     row="${row%|}"
-
     echo "$row" >> "$table_file"
     echo "Row inserted successfully"
 }
