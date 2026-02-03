@@ -113,14 +113,14 @@ create_table() {
 list_tables() {
 
     if [[ -z "$CURRENT_DB" ]]; then
-        echo "No database "
+        echo "No  database selected."
         return
     fi
 
     tables=$(ls "$CURRENT_DB"/*.table 2>/dev/null)
 
     if [[ -z "$tables" ]]; then
-        echo "No Database found"
+        echo "No tables found in database '$CURRENT_DB'."
         return
     fi
 
