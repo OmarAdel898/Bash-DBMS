@@ -259,7 +259,52 @@ select_from_table() {
 }
 
 delete_from_table() {
-     echo "⚠️ Delete from table not implemented yet"
+     read -p "Enter table name: " table_name < /dev/tty
+
+    if [[ -z "$table_name" ]]; then
+        echo "Table name cannot be empty"
+        return
+    fi
+
+    table_file="$CURRENT_DB/$table_name.table"
+    meta_file="$CURRENT_DB/$table_name.meta"
+
+    if [[ ! -f "$table_file" || ! -f "$meta_file" ]]; then
+        echo "Table does not exist"
+        return
+    fi
+
+    #get pk column index
+    pk_index=1
+    found_pk=false
+    counter=1
+
+    while IFS=: read -r col_name col_type col_key
+    do
+        if [[ "$col_key" == "PK" ]]; then
+            pk_index=$counter
+            found_pk=true
+            break
+        fi
+        ((counter++))
+    done < "$meta_file"
+
+    if ! $found_pk; then
+        echo "Primary key not found"
+        return
+    fi
+
+    read -p "Enter Primary Key value to delete: " pk_value < /dev/tty
+
+    if ! cut -d'|' -f"$pk_index" "$table_file" | grep -qx "$pk_value"; then
+        echo "Record not found"
+        return
+    fi
+
+    grep -v "^$pk_value|" "$table_file" > temp_file
+    mv temp_file "$table_file"
+
+    echo "Row deleted successfully"
 }
 
 update_table() {
