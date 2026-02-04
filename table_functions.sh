@@ -223,7 +223,39 @@ insert_into_table() {
 
 
 select_from_table() {
-     echo "⚠️ Select from table not implemented yet"
+     read -p "Enter table name: " table_name < /dev/tty
+
+    if [[ -z "$table_name" ]]; then
+        echo "Table name cannot be empty"
+        return
+    fi
+
+    table_file="$CURRENT_DB/$table_name.table"
+    meta_file="$CURRENT_DB/$table_name.meta"
+
+    if [[ ! -f "$table_file" || ! -f "$meta_file" ]]; then
+        echo "Table does not exist"
+        return
+    fi
+    header=""
+
+    while IFS=: read -r col_name col_type col_key
+    do
+        header+="$col_name | "
+    done < "$meta_file"
+
+    echo "${header% | }"
+    echo "----------------------------------------"
+
+    if [[ ! -s "$table_file" ]]; then
+        echo "Table is empty"
+        return
+    fi
+    while IFS='|' read -r row
+    do
+        formatted=$(echo "$row" | sed 's/|/ | /g')
+        echo "$formatted"
+    done < "$table_file"
 }
 
 delete_from_table() {
