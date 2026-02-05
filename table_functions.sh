@@ -231,7 +231,95 @@ delete_from_table() {
 }
 
 update_table() {
-    echo "⚠️ Update table not implemented yet"
+    read -p "Enter table name: " table_name < /dev/tty
+
+    if [[ -z "$table_name" ]]; then
+        echo "Table name cannot be empty"
+        return
+    fi
+
+    table_file="$CURRENT_DB/$table_name.table"
+    meta_file="$CURRENT_DB/$table_name.meta"
+
+    if [[ ! -f "$table_file" || ! -f "$meta_file" ]]; then
+        echo "Table does not exist"
+        return
+    fi
+
+  
+    pk_col=""
+    while IFS=: read -r col_name col_type col_key
+    do
+        if [[ "$col_key" == "PK" ]]; then
+            pk_col="$col_name"
+            break
+        fi
+    done < "$meta_file"
+
+    if [[ -z "$pk_col" ]]; then
+        echo "Primary key not found"
+        return
+    fi
+
+    read -p "Enter $pk_col value to update: " pk_value < /dev/tty
+
+    if [[ -z "$pk_value" ]]; then
+        echo "Primary key value cannot be empty"
+        return
+    fi
+
+
+    line_number=$(cut -d'|' -f1 "$table_file" | grep -nx "$pk_value" | cut -d: -f1)
+
+    if [[ -z "$line_number" ]]; then
+        echo "Record not found"
+        return
+    fi
+
+    old_row=$(sed -n "${line_number}p" "$table_file")
+    IFS='|' read -r -a old_values <<< "$old_row"
+
+    new_row=""
+    index=0
+
+    while IFS=: read -r col_name col_type col_key
+    do
+        old_value="${old_values[$index]}"
+
+        while true
+        do
+            read -p "Enter new value for $col_name ($col_type) [current: $old_value]: " value < /dev/tty
+
+          
+            if [[ -z "$value" ]]; then
+                value="$old_value"
+            fi
+
+            if [[ "$col_type" == "int" && ! "$value" =~ ^[0-9]+$ ]]; then
+                echo "Invalid integer value"
+                continue
+            fi
+
+            if [[ "$col_key" == "PK" && "$value" != "$old_value" ]]; then
+                if cut -d'|' -f1 "$table_file" | grep -qx "$value"; then
+                    echo "Primary key must be unique"
+                    continue
+                fi
+            fi
+
+            break
+        done
+
+        new_row+="$value|"
+        ((index++))
+    done < "$meta_file"
+
+    new_row="${new_row%|}"
+
+  
+    sed -i "${line_number}s/.*/$new_row/" "$table_file"
+
+    echo "Record updated successfully"
 }
 
 
